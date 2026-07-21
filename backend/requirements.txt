@@ -1,0 +1,6 @@
+fastapi>=0.115
+uvicorn>=0.30
+anthropic>=0.40
+python-dotenv>=1.0
+# Only needed if you point DATABASE_URL at your own Postgres (optional):
+asyncpg>=0.29

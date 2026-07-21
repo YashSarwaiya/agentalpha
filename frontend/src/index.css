@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* Design tokens the chat components resolve against (Tailwind v4 @theme).
+   These are the DARK values — the chat is a pitch-black, Robinhood-style
+   surface, so dark is the one and only theme in this standalone build. */
+@theme {
+  --font-display: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'JetBrains Mono', monospace;
+
+  --color-background: #141417;
+  --color-foreground: #ffffff;
+  --color-card: #0b0b0d;
+  --color-card-hover: #161619;
+  --color-muted: #1d1d21;
+  --color-muted-foreground: #b4b8c0;
+  --color-border: #262629;
+  --color-border-subtle: #1a1a1d;
+  --color-input: #0b0b0d;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cdd1d8;
+  --color-text-dim: #9197a0;
+
+  --color-primary: #00c805;
+  --color-primary-dim: rgba(0, 200, 5, 0.12);
+  --color-accent: #00c805;
+  --color-accent-dim: rgba(0, 200, 5, 0.12);
+  --color-accent-hover: #00b004;
+  --color-brand: #00c805;
+
+  --color-gain: #00c805;
+  --color-loss: #ff5000;
+}
+
+* { box-sizing: border-box; }
+
+html { color-scheme: dark; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 500;
+  background: #000;
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #33363c; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4a4e55; }
+
+/* Tabular numerals so prices/returns line up. */
+.font-mono { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
+.tnum { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
+
+/* Dual-thumb range slider: two transparent native inputs overlaid on one track.
+   pointer-events live on the thumbs only, so both handles stay draggable. */
+.range-dual { position: relative; height: 28px; }
+.range-dual input[type="range"] {
+  position: absolute; left: 0; top: 0; width: 100%; height: 28px; margin: 0;
+  background: transparent; pointer-events: none; -webkit-appearance: none; appearance: none;
+}
+.range-dual input[type="range"]:focus { outline: none; }
+.range-dual input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; pointer-events: auto;
+  height: 22px; width: 22px; border-radius: 9999px;
+  background: var(--color-primary); border: 3px solid var(--color-card);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4); cursor: grab; transition: transform .1s ease;
+}
+.range-dual input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.12); }
+.range-dual input[type="range"]::-moz-range-thumb {
+  pointer-events: auto; height: 22px; width: 22px; border-radius: 9999px;
+  background: var(--color-primary); border: 3px solid var(--color-card); cursor: grab;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.range-dual .rt { position: absolute; top: 11px; left: 0; right: 0; height: 6px; border-radius: 9999px; background: var(--color-muted); }
+.range-dual .rt-fill { position: absolute; top: 11px; height: 6px; border-radius: 9999px; background: var(--color-primary); }
