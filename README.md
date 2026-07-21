@@ -1,142 +1,91 @@
-# Agent Builder Chat — open source
+<div align="center">
 
-The conversational builder from [AgentAlpha](https://agentalpha.app): **describe a
-trading strategy in plain English, and the chat turns it into a real, working
-agent spec** — a deterministic stock screen + risk settings — no code, no forms.
+<img src="logo.png" alt="AgentAlpha" width="130" />
 
-This folder is fully standalone. It runs with **one API key** (or zero — see
-playbooks mode) and ships a synthetic sample universe, so you can hack on the
-chat experience without any database or market-data subscription.
+# AgentAlpha — Agent Builder
 
-> Everything here paper-trades ($100k simulated book in the production app).
-> Nothing is investment advice.
+**Describe a trading strategy in plain English.**
+**The chat turns it into a real, working agent — no code, no forms.**
 
-## What's in the box
+[**agentalpha.app**](https://agentalpha.app) &nbsp;·&nbsp;
+![MIT](https://img.shields.io/badge/license-MIT-15a553)
+![Python](https://img.shields.io/badge/python-3.11+-3776AB)
+![paper trading](https://img.shields.io/badge/paper%20trading-not%20advice-999)
+
+</div>
+
+---
+
+This is the open-source **conversational builder** behind [AgentAlpha](https://agentalpha.app). You chat a strategy — *"growth stocks with strong momentum"* — and it builds a **deterministic stock screen + risk settings** you can run. Fully standalone: one API key (or zero — playbooks mode) and a synthetic 40-stock universe, no database needed.
+
+> 🧪 Everything is **paper trading** (simulated). Nothing here is investment advice.
+
+## ✨ The idea
+
+**The AI only _builds_ the spec — plain code _runs_ it.**
 
 ```
-backend/                       FastAPI server (Python 3.11+)
-  main.py                      the whole API surface (~8 endpoints)
-  agent_builder.py             ★ the heart — one LLM chat turn → spec (system prompt lives here)
-  screen.py                    deterministic screener: {field, op, value} conditions → ranked tickers
-  playbooks.py                 13 curated famous-investor checklists ("make a Minervini agent")
-  cost_guard.py                daily LLM spend killswitch
-  sample_data.py               40 FICTIONAL stocks so screens work with zero setup
-frontend/                      Vite + React 19 + Tailwind v4
-  src/components/arena/
-    AgentInterview.tsx         ★ the chat UI — chat loop, option chips, sliders, spec panel
-    PreviewPanel.tsx           renders "what it would buy right now"
-    BacktestPanel.tsx          renders backtest results (engine not included — see below)
-  src/lib/api.ts               typed fetch client (8 endpoints)
-  src/lib/builderStore.ts      localStorage drafts, version history, backtest-run memory
-  src/types/arena.ts           all shared types
+"buy growth stocks with strong momentum, sell if they drop below the 50-day"
+        │
+        ▼   Claude (Haiku) → a structured screen:  {field, op, value} + risk
+        ▼   a deterministic screener runs it → the stocks that pass are the buys
+        ▼   reproducible, free, explainable — no LLM at run time
 ```
 
-## Quickstart
+## 🚀 Quickstart
 
-**Backend** (Python 3.11+):
+**Backend** (Python 3.11+)
 
 ```bash
 cd backend
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env            # add your ANTHROPIC_API_KEY
+cp .env.example .env          # add your ANTHROPIC_API_KEY
 uvicorn main:app --reload --port 8000
 ```
 
-**Frontend** (Node 20+):
+**Frontend** (Node 20+)
 
 ```bash
 cd frontend
 npm install
-npm run dev                      # → http://localhost:5173
+npm run dev                   # → http://localhost:5173
 ```
 
-Type "growth stocks with strong momentum" and watch the spec build itself.
+Type *"growth stocks with strong momentum"* and watch the spec build itself.
 
-### No API key? Playbooks mode
+**No API key?** Try **"make a Minervini agent"** — famous-investor strategies are answered from curated checklists (`playbooks.py`): zero LLM, zero cost.
 
-Without `ANTHROPIC_API_KEY`, the chat still answers requests that name a famous
-investor strategy — try **"make a Minervini agent"**. Those turns are fully
-deterministic (a curated checklist in `playbooks.py`), cost nothing, and
-exercise the whole UI.
+## 📦 What's inside
 
-## How it works
+| File | |
+|---|---|
+| `backend/agent_builder.py` | ★ the heart — one chat turn → spec (the system prompt) |
+| `backend/screen.py` | deterministic screener (~75 whitelisted fields) |
+| `backend/playbooks.py` | 13 famous-investor checklists |
+| `backend/sample_data.py` | 40 **fictional** stocks — runs with zero setup |
+| `frontend/…/AgentInterview.tsx` | ★ the chat UI |
 
-```
-user message
-   │
-   ▼
-POST /api/v1/agent-builder
-   │
-   ├─ names a known strategy? → playbooks.py (deterministic, no LLM)
-   │
-   └─ else → Claude (Haiku) with a forced `respond` tool call
-        · system prompt = the builder's rules + field vocabulary (agent_builder.py)
-        · returns {reply, options, slider?, spec} — the spec carries the SCREEN:
-          a list of {field, op, value} conditions
-   │
-   ▼
-screen.py runs the conditions against the universe → "matches N of M" + tickers
-   │
-   ▼
-the UI renders the reply + updates the live agent-anatomy panel
-```
+## 🔌 Open vs. hosted
 
-Key design choice: **the AI only BUILDS the spec — deterministic code runs it.**
-A buy rule that's a number becomes a screen condition; the stocks that pass the
-screen are the buys. That keeps the runtime reproducible, free, and explainable.
+This repo is the **builder**. The hosted app adds the closed pieces:
 
-## The screen field vocabulary
-
-The model may only emit fields whitelisted in `screen.py` → `FIELD_MAP` (~75
-fields: valuation, growth, health, dividends, ownership, momentum, chart
-patterns with setup/breakout timing, and catalyst booleans). Unknown fields are
-dropped defensively (`normalize_conditions`). To add a field: add it to
-`FIELD_MAP`, describe it in the system prompt in `agent_builder.py`, and make
-sure your data provides it.
-
-## Sample data — read this
-
-The bundled universe (`sample_data.py`) is **synthetic and fictional** — made-up
-tickers, made-up values, seeded so everyone sees the same 40 stocks. It exists
-so the screener demo works with no market-data license. Don't read anything
-into the numbers.
-
-### Bring your own data
-
-Point `DATABASE_URL` at a Postgres with a `stocks` table:
-
-```sql
-CREATE TABLE stocks (
-  ticker TEXT PRIMARY KEY,
-  name TEXT, sector TEXT,
-  market_cap BIGINT, last_price DECIMAL,
-  is_top_100 BOOLEAN DEFAULT FALSE,   -- the screenable subset
-  context JSONB                        -- nested doc; paths must match FIELD_MAP
-);
-```
-
-`screen.py` extracts only the `FIELD_MAP` paths server-side, so a large
-`context` document stays cheap to query.
-
-## Integration points (not included)
-
-| Seam | In this repo | In production |
+| | This repo | [agentalpha.app](https://agentalpha.app) |
 |---|---|---|
-| Auth | none (local dev server) | JWT per user, rate limits, per-user LLM budgets |
-| Deploy | writes `local_agents.json` | deploys to a live paper-trading engine |
-| Backtest | returns a friendly 400 | 5-year point-in-time replay over real history |
-| Preview | deterministic screen + sizing | same, plus live prices |
+| Market data | 40 fake stocks | thousands of real stocks |
+| Backtest | stub | 5-year point-in-time replay |
+| Deploy / paper-trade | local file | live paper engine + public track record |
 
-The UI already handles all of these seams gracefully, so wiring in your own
-engine is additive — implement the endpoint, keep the response shape.
+Wiring in your own data/engine is additive — implement the endpoint, keep the response shape.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Good first areas: better conversation
-flows in the system prompt, new playbooks, new screen fields, UI polish,
-non-Anthropic model support.
+PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Good first areas: conversation flows, new playbooks, screen fields, UI polish, non-Anthropic model support.
+
+## Notice
+
+Strategy/method names (CAN SLIM, Magic Formula, etc.) and investor names belong to their respective owners and are used here **descriptively only** — not affiliated, not endorsed, and **not investment advice**.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © 2026 AgentAlpha
