@@ -8,7 +8,9 @@
 
 Describe a strategy in plain English → get a real, **backtestable** trading agent.
 
-<!-- 🎥 TODO: drop a 15-second demo GIF here (record building an agent in the chat) — it's the #1 driver of stars. -->
+<img src="demo.gif" alt="Build a trading agent by chatting — 15s demo" width="760" />
+
+<sub>▶ [watch in HD](demo.mp4)</sub>
 
 [**agentalpha.app**](https://agentalpha.app) &nbsp;·&nbsp;
 [![Stars](https://img.shields.io/github/stars/YashSarwaiya/agentalpha?style=social)](https://github.com/YashSarwaiya/agentalpha/stargazers)
