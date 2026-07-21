@@ -39,15 +39,22 @@ sell_when: "price < 50-day moving average"
 
 …then **backtests it on 5 years of real market history** and paper-trades it live. No code, ever.
 
-## 🧠 Not "another AI wrapper"
+## 🧠 The main idea — not "another AI wrapper"
 
-The trick most LLM tools miss: **the AI only _writes_ the strategy once — plain, deterministic code _runs_ it.**
+Most LLM trading tools let a model place trades live: a black box that hallucinates and can't be tested. AgentAlpha flips it:
+
+> **The AI only _writes_ the strategy once. Plain, deterministic code _runs_ it.**
 
 ```
-your words → Claude (Haiku) → a {field, op, value} screen → the screener runs it, no LLM
+your words → Claude (Haiku) → a {field, op, value} screen → the screener runs it, no LLM at run time
 ```
 
-So every agent is **reproducible, free at runtime, backtestable, and explainable** — not a black box hallucinating trades.
+So every agent is **reproducible, free at runtime, backtestable, and explainable.** That's the whole point — a strategy you can *trust and verify*, not a mystery bot.
+
+## 🔀 Two ways to drive it
+
+- 🗣️ **Chat** (this repo, no code) — describe a strategy, get a working agent.
+- 🤖 **Bring your own AI** — plug **Claude / ChatGPT / Cursor** into a paper account and let *your* AI build, backtest, and trade for you (via MCP, on [agentalpha.app](https://agentalpha.app)). Like Robinhood's agent — but **paper money + a real backtester**, not real cash unsupervised.
 
 ## 🚀 Run it (60 seconds)
 
