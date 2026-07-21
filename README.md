@@ -4,42 +4,52 @@
 
 # AgentAlpha
 
-**Describe a trading strategy in plain English — the chat turns it into a working agent.**
+### Build a stock-trading agent by typing one sentence. No code.
 
-🛠️ **Build** · 🔬 **Backtest** · 🌐 **Share** — building the largest open community of AI trading agents.
+Describe a strategy in plain English → get a real, **backtestable** trading agent.
+
+<!-- 🎥 TODO: drop a 15-second demo GIF here (record building an agent in the chat) — it's the #1 driver of stars. -->
 
 [**agentalpha.app**](https://agentalpha.app) &nbsp;·&nbsp;
-![MIT](https://img.shields.io/badge/license-MIT-15a553)
+[![Stars](https://img.shields.io/github/stars/YashSarwaiya/agentalpha?style=social)](https://github.com/YashSarwaiya/agentalpha/stargazers)
+&nbsp; ![MIT](https://img.shields.io/badge/license-MIT-15a553)
 ![Python](https://img.shields.io/badge/python-3.11+-3776AB)
-![paper trading](https://img.shields.io/badge/paper%20trading-not%20advice-999)
+![paper trading](https://img.shields.io/badge/paper-not%20advice-999)
 
 </div>
 
 ---
 
-The open-source **chat builder** behind [AgentAlpha](https://agentalpha.app): say *"growth stocks with strong momentum"* and get a **deterministic stock screen + risk rules** you can run. Standalone — one API key (or zero) and a 40-stock sample universe, no database.
+## ⚡ The 10-second demo
 
-> 🧪 Paper trading only. Not investment advice.
+**You type:**
 
-## Why AgentAlpha
+> *"Buy strong tech stocks breaking out to new highs. Sell if they drop below the 50-day average."*
 
-Most tools do one of these. AgentAlpha does all three:
+**AgentAlpha builds a real, deterministic strategy:**
 
-- 🛠️ **Build** — describe your strategy in plain English. No code, no forms.
-- 🔬 **Backtest** — replay it over **5 years of real market history**, point-in-time (no look-ahead).
-- 🌐 **Share** — publish your agent, grow a public track record, and climb the community leaderboard.
-
-## How it works
-
-**The AI builds the spec; plain code runs it.**
-
-```
-your words → Claude (Haiku) → a {field, op, value} screen → the screener runs it → stocks that pass are the buys
+```jsonc
+screen: [
+  { field: "sector",       op: "==", value: "Technology" },
+  { field: "rs_rating",    op: ">=", value: 80 },        // market leaders
+  { field: "any_breakout", op: "==", value: true }       // fresh breakout
+],
+sell_when: "price < 50-day moving average"
 ```
 
-No LLM at run time, so it's reproducible, free, and explainable.
+…then **backtests it on 5 years of real market history** and paper-trades it live. No code, ever.
 
-## Run it
+## 🧠 Not "another AI wrapper"
+
+The trick most LLM tools miss: **the AI only _writes_ the strategy once — plain, deterministic code _runs_ it.**
+
+```
+your words → Claude (Haiku) → a {field, op, value} screen → the screener runs it, no LLM
+```
+
+So every agent is **reproducible, free at runtime, backtestable, and explainable** — not a black box hallucinating trades.
+
+## 🚀 Run it (60 seconds)
 
 ```bash
 # backend — Python 3.11+
@@ -52,12 +62,20 @@ uvicorn main:app --reload --port 8000
 cd frontend && npm install && npm run dev      # → localhost:5173
 ```
 
-**No API key?** Try **"make a Minervini agent"** — famous strategies run from built-in checklists, zero cost.
+**No API key?** Type **"make a Minervini agent"** — famous strategies run from built-in checklists, zero cost.
 
-## Open vs. hosted
+## ✨ Build · Backtest · Share
 
-This repo is the **builder**. The hosted app ([agentalpha.app](https://agentalpha.app)) adds real market data, the full **5-year backtest**, and a live paper-trading engine with public track records + a community leaderboard.
+- 🛠️ **Build** — describe your strategy in plain English. No code, no forms.
+- 🔬 **Backtest** — replay it over **5 years of real market history**, point-in-time (no look-ahead).
+- 🌐 **Share** — publish your agent, grow a public track record, climb the community leaderboard.
 
-## License
+*This repo is the open **builder**. The hosted app ([agentalpha.app](https://agentalpha.app)) adds real market data, the full 5-year backtest, and live paper-trading with public track records.*
 
-[MIT](LICENSE) · Not affiliated with any named investor or method · Not investment advice.
+## ⭐ Help it grow
+
+If this is useful, **[star the repo](https://github.com/YashSarwaiya/agentalpha)** — we're building the largest open community of AI trading agents, and stars are how other builders find it. PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+<sub>🧪 Paper trading, educational only. [MIT](LICENSE) licensed. Not affiliated with any named investor or method. **Not investment advice.**</sub>
